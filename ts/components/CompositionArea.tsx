@@ -481,6 +481,36 @@ export const CompositionArea = ({
     };
   }, [setLarge]);
 
+  // Focus message composition input when key is pressed
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const { key } = e;
+
+      // We don't want to react to a control character
+      if (key.length !== 1) {
+        return;
+      }
+
+      // We don't want to switch focus if another panel is up
+      const panels = document.querySelectorAll('.conversation .panel');
+      if (panels && panels.length > 1) {
+        return;
+      }
+
+      // We don't want to take focus away of input fields
+      if (document.activeElement?.nodeName.toLowerCase() === 'input') {
+        return;
+      }
+
+      inputApiRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', handler);
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
+  });
+
   if (
     isBlocked ||
     areWePending ||
